@@ -21,6 +21,6 @@ def get_prices(ticker, start="2014-01-01"):
     return df
 
 if __name__ == "__main__":
-    spy = get_prices("SPY")
+    spy = get_prices("MSFT")
     print(spy.head())
     print(spy.columns)
