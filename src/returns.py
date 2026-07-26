@@ -1,0 +1,17 @@
+import numpy as np
+import sqlite3
+import pandas as pd
+
+def add_returns(df):
+    df["simple_return"] = df["adj_close"].pct_change()
+    df["log_return"] = np.log(df["adj_close"] / df["adj_close"].shift(1))
+    return df
+
+if __name__ == "__main__":
+    conn = sqlite3.connect("data/market.db")
+    spy = pd.read_sql_query(
+        "SELECT * FROM prices WHERE ticker = 'SPY' ORDER BY date", conn
+    )
+    conn.close()
+    spy = add_returns(spy)
+    print(spy[["date", "adj_close", "simple_return", "log_return"]].head())
