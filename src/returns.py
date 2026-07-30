@@ -13,6 +13,15 @@ def resample_returns(df, period):
     df = df.set_index("date")
     return df["log_return"].resample(period).sum()
 
+def rolling_volatility(df, window=21):
+    return df["log_return"].rolling(window).std() * np.sqrt(252)
+
+def max_drawdown(df):
+    wealth = (1+df['simple_return']).cumprod()
+    peak = wealth.cummax()
+    drawdown = (wealth-peak)/peak
+    return drawdown.min()
+
 if __name__ == "__main__":
     conn = sqlite3.connect("data/market.db")
     spy = pd.read_sql_query(
@@ -25,3 +34,8 @@ if __name__ == "__main__":
 
     weekly = resample_returns(spy, "W")
     print(weekly.head())   # weekly Series — just print it directly
+
+    vol = rolling_volatility(spy)
+    print(vol.tail())
+
+    print(max_drawdown(spy))
