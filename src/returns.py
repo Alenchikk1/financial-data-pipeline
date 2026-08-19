@@ -3,8 +3,10 @@ import sqlite3
 import pandas as pd
 
 def add_returns(df):
-    df["simple_return"] = df["adj_close"].pct_change()
-    df["log_return"] = np.log(df["adj_close"] / df["adj_close"].shift(1))
+    df["simple_return"] = df.groupby("ticker")["adj_close"].pct_change()
+    df["log_return"] = df.groupby("ticker")["adj_close"].transform(
+        lambda x: np.log(x / x.shift(1))
+    )
     return df
 
 def resample_returns(df, period):
